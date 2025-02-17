@@ -4,7 +4,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import datetime
 import sys
 
-# Стили для приложения
 APP_STYLES = """
 QMainWindow {
     background-color: #2D2D2D;
@@ -43,8 +42,11 @@ QLabel {
 QProgressBar {
     background: #404040;
     border-radius: 5px;
-    height: 20px;
+    height: 30px;  /* Увеличиваем высоту прогресс-бара */
     margin: 20px;
+    text-align: center;  /* Текст по центру */
+    font-size: 16px;  /* Размер шрифта */
+    color: white;  /* Цвет текста */
 }
 
 QProgressBar::chunk {
@@ -97,14 +99,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("Windows Activator")
         self.setMinimumSize(600, 400)
         
-        # Центральный виджет и layout
         central_widget = QtWidgets.QWidget()
         self.setCentralWidget(central_widget)
         
         main_layout = QtWidgets.QVBoxLayout()
         central_widget.setLayout(main_layout)
         
-        # Элементы интерфейса
         self.label = QtWidgets.QLabel("Вас приветствует Windows Activator!")
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         
@@ -113,18 +113,17 @@ class MainWindow(QtWidgets.QMainWindow):
         
         self.progressBar = QtWidgets.QProgressBar()
         self.progressBar.setValue(0)
+        self.progressBar.setFormat("%p%")  
+        self.progressBar.setAlignment(QtCore.Qt.AlignCenter)  
         
-        # Добавление элементов в layout
         main_layout.addStretch()
         main_layout.addWidget(self.label)
         main_layout.addWidget(self.pushButton, 0, QtCore.Qt.AlignCenter)
         main_layout.addStretch()
         main_layout.addWidget(self.progressBar)
         
-        # Подключение сигналов
         self.pushButton.clicked.connect(self.start_commands)
         
-        # Эффект тени для кнопки
         shadow = QtWidgets.QGraphicsDropShadowEffect()
         shadow.setBlurRadius(15)
         shadow.setColor(QtGui.QColor(0, 0, 0, 100))
@@ -132,6 +131,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pushButton.setGraphicsEffect(shadow)
 
     def start_commands(self):
+        self.label.setText("Пожалуйста ожидайте \n Процесс активации может занимать до 10 минут")
         log_file.write(f"{datetime.datetime.now().strftime('%d_%m_%Y')}_{datetime.datetime.now().strftime('%H-%M')} [INFO] Была нажата кнопка Активировать Windows")
         self.progressBar.setValue(10)
         log_file.write(f"{datetime.datetime.now().strftime('%d_%m_%Y')}_{datetime.datetime.now().strftime('%H-%M')} [INFO] Было установлено значение прогресс бара на 10%")
@@ -189,6 +189,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def check_exit_code_ato(self, ssilka):
         if ssilka.get_result_code() == 0:
+            self.label.setText("Активация выполнена успешно!")
             log_file.write(f"{datetime.datetime.now().strftime('%d_%m_%Y')}_{datetime.datetime.now().strftime('%H-%M')} [INFO] Успешная обработка команды slmgr /ato")
             self.progressBar.setValue(100)
             log_file.write(f"{datetime.datetime.now().strftime('%d_%m_%Y')}_{datetime.datetime.now().strftime('%H-%M')} [INFO] Успешная установка значения прогресс бара на 100%")
